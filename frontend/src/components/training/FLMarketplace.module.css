@@ -1,0 +1,311 @@
+
+.marketplace {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108, 99, 255, 0.12) 0%, transparent 70%);
+  padding: 40px 0 32px;
+  border-bottom: 1px solid var(--color-border);
+  margin-top: 68px; /* Account for navbar */
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.headerContent h1 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-bottom: var(--space-sm);
+}
+
+.headerContent p {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  max-width: 500px;
+}
+
+.headerContent .btn {
+  height: fit-content;
+  white-space: nowrap;
+}
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.controlsRow input,
+.controlsRow select {
+  max-width: 250px;
+}
+
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+  }
+  .controlsRow {
+    flex-direction: column;
+  }
+  .controlsRow input,
+  .controlsRow select {
+    width: 100% !important;
+    max-width: unset;
+  }
+}
+
+.grid {
+  flex: 1;
+  padding: var(--space-2xl) 0;
+  background: var(--color-bg-primary);
+}
+
+.sessionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--space-lg);
+  animation: fadeIn 0.4s ease;
+}
+
+@media (max-width: 1200px) {
+  .sessionGrid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .sessionGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sessionCard {
+  position: relative;
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  backdrop-filter: blur(12px);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.5s ease;
+}
+
+.sessionCard:hover {
+  border-color: var(--color-border-accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card), var(--shadow-glow-primary);
+}
+
+.statusBadge {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  padding-right: 60px; /* Account for status badge */
+}
+
+.cardHeader h3 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  color: var(--color-text-primary);
+}
+
+.cardSubtitle {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.description {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+  min-height: 40px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.statsRow {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.stat svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.inviteBox {
+  background: rgba(108, 99, 255, 0.08);
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.inviteBox label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.inviteCode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  overflow: hidden;
+}
+
+.inviteCode input {
+  flex: 1;
+  background: transparent !important;
+  border: none !important;
+  color: var(--color-primary) !important;
+  font-size: 0.8rem !important;
+  padding: 8px !important;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  outline: none;
+  cursor: pointer;
+}
+
+.toggleBtn,
+.copyBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.toggleBtn:hover,
+.copyBtn:hover {
+  color: var(--color-primary);
+}
+
+.cardActions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: auto;
+  padding-top: var(--space-md);
+}
+
+.cardActions .btn {
+  flex: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sessionCard:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.sessionCard:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.sessionCard:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.sessionCard:nth-child(n + 5) {
+  animation-delay: 0.2s;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 32px 0 24px;
+  }
+
+  .headerContent {
+    gap: var(--space-md);
+  }
+
+  .cardHeader {
+    margin-bottom: var(--space-sm);
+  }
+
+  .statsRow {
+    gap: var(--space-sm);
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,44 @@
+# --- Web Framework ---
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+
+# --- Database ---
+motor==3.3.2
+pymongo==4.6.2
+
+# --- Auth (Clerk JWT verification) ---
+PyJWT==2.8.0
+cryptography==42.0.5
+python-multipart==0.0.9
+
+# --- Config ---
+pydantic-settings==2.2.1
+pydantic[email]
+python-dotenv==1.0.1
+
+# --- HTTP (Pinata calls) ---
+httpx==0.27.0
+
+# --- Federated Learning & ML ---
+flwr==1.8.0
+# torch 2.8.0 does not exist — latest stable for Python 3.12 on Windows is 2.3.1
+torch==2.3.1
+# torchvision must match torch: 0.18.1 pairs with torch 2.3.1
+torchvision==0.18.1
+transformers==4.40.0
+librosa==0.10.1
+scikit-learn==1.4.2
+
+# --- Data Processing ---
+pillow==10.3.0
+# numpy 1.24.x does not support Python 3.12 — ImpImporter was removed in 3.12
+# numpy 1.26.x is the first series with full Python 3.12 support
+numpy==1.26.4
+pandas==2.2.2
+
+# --- SSE / Async ---
+sse-starlette==2.0.0
+
+# --- Testing ---
+pytest==8.1.1
+pytest-asyncio==0.23.6

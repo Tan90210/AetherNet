@@ -1,0 +1,125 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: aethernet-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: aethernet_admin
+      MONGO_INITDB_ROOT_PASSWORD: aethernet_secure_password_2024
+      MONGO_INITDB_DATABASE: aethernet
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - aethernet-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend FastAPI Application
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aethernet-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Database
+      MONGODB_URI: mongodb://aethernet_admin:aethernet_secure_password_2024@mongodb:27017
+    
+      DATABASE_NAME: aethernet
+      CLERK_FRONTEND_API: https://wealthy-fowl-63.clerk.accounts.dev
+      CLERK_SECRET_KEY: sk_test_LEYphaCR588NuMjQKnwhwpLq8SXKdDHaAvySAgW49e
+      
+      # IPFS/Pinata (YOU MUST UPDATE THESE)
+      PINATA_API_KEY: 5b3f83ed351dbe85a6ff
+      PINATA_SECRET_KEY: b2d41a88be345ae53385dc702da499365c9f6cafe86db9a710578abd0bff4735
+      IPFS_GATEWAY: /ip4/127.0.0.1/tcp/5001
+      
+      # Security
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-your-super-secret-jwt-key-change-in-production}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      
+      # API
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      CORS_ORIGINS: http://localhost:5173,http://localhost:3000,http://localhost:80,http://localhost
+      
+      # FL
+      FL_SERVER_HOST: 0.0.0.0
+      FL_SERVER_PORT: 8080
+      
+      # Features
+      ENABLE_FEDERATED_LEARNING: "True"
+      ENABLE_SSE: "True"
+      
+      # Development
+      RELOAD: "False"
+      DEBUG: "False"
+      LOG_LEVEL: INFO
+    volumes:
+      - backend_storage:/app/storage
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - aethernet-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend React Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aethernet-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      VITE_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - aethernet-network
+
+  # Federated Learning Server (Optional - start manually when needed)
+  fl-server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.fl
+    container_name: aethernet-fl-server
+    restart: "no"
+    ports:
+      - "8080:8080"
+    environment:
+      FL_SERVER_HOST: 0.0.0.0
+      FL_SERVER_PORT: 8080
+      FL_MIN_CLIENTS: 2
+    networks:
+      - aethernet-network
+    profiles:
+      - federated
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+  backend_storage:
+    driver: local
+
+networks:
+  aethernet-network:
+    driver: bridge
