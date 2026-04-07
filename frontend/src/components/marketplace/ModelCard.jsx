@@ -96,12 +96,11 @@ export default function ModelCard({ model, style={}, className='' }) {
     }
 
     return (
-        <Link
-            to={`/models/${model.id}`}
+        <div
             className={`glass-card ${className}`}
-            style={{ ...sharedStyle, cursor: 'pointer' }}
+            style={{ ...sharedStyle, cursor: 'default' }}
         >
             {cardContent}
-        </Link>
+        </div>
     );
 }
