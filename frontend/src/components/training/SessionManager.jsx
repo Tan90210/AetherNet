@@ -455,17 +455,8 @@ export default function SessionManager({ onSessionJoined }) {
                                 required
                                 style={{ background: 'rgba(255,255,255,0.06)', color: 'inherit' }}
                             >
-                                <option value="">€” Select a base or published model €”</option>
-
-                                {baseModels.length>0 && (
-                                    <optgroup label="Base Models">
-                                        {baseModels.map(m => (
-                                            <option key={`base-${m.id}`} value={m.id}>
-                                                {m.name} ({m.family}) €” Base model
-                                            </option>
-                                        ))}
-                                    </optgroup>
-                                )}
+                                
+                            <option value="">— Select a published model —</option>
 
                                 {models.length>0 && (
                                     <optgroup label="Published Models">
