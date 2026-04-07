@@ -12,21 +12,12 @@ const ARCH_COLORS={
 export default function ModelCard({ model, style={}, className='' }) {
     const archColor=ARCH_COLORS[model.architecture_type] || '#6c63ff';
     const cidShort=model.current_version_cid
-        ? `${model.current_version_cid.slice(0, 8)}€¦${model.current_version_cid.slice(-4)}`
+        ? `${model.current_version_cid.slice(0, 8)}…${model.current_version_cid.slice(-4)}`
         : null;
+    const isBaseModel = model.tags?.includes('base-model');
 
-    return (
-        <Link
-            to={`/models/${model.id}`}
-            className={`glass-card ${className}`}
-            style={{
-                display: 'flex', flexDirection: 'column',
-                padding: 'var(--space-lg)',
-                textDecoration: 'none',
-                cursor: 'pointer',
-                ...style,
-            }}
-        >
+    const cardContent = (
+        <>
             {/* Arch badge + CID */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                 <span className="badge" style={{ background: `${archColor}20`, color: archColor, borderColor: `${archColor}40` }}>
@@ -86,6 +77,31 @@ export default function ModelCard({ model, style={}, className='' }) {
                     )}
                 </div>
             </div>
+        </>
+    );
+
+    const sharedStyle = {
+        display: 'flex', flexDirection: 'column',
+        padding: 'var(--space-lg)',
+        textDecoration: 'none',
+        ...style,
+    };
+
+    if (isBaseModel) {
+        return (
+            <div className={`glass-card ${className}`} style={{ ...sharedStyle, cursor: 'default' }}>
+                {cardContent}
+            </div>
+        );
+    }
+
+    return (
+        <Link
+            to={`/models/${model.id}`}
+            className={`glass-card ${className}`}
+            style={{ ...sharedStyle, cursor: 'pointer' }}
+        >
+            {cardContent}
         </Link>
     );
 }

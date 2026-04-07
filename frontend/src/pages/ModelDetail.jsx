@@ -62,6 +62,13 @@ export default function ModelDetail() {
         </div>
     );
 
+    if (!model) return (
+        <div className="flex-center flex-col" style={{ height: '80vh', paddingTop: 68, gap: 16 }}>
+            <p style={{ fontSize: '1.1rem', color: 'var(--color-text-muted)' }}>Model not found.</p>
+            <Link to="/marketplace" className="btn btn-secondary btn-sm"><ArrowLeft size={13} /> Back</Link>
+        </div>
+    );
+
     return (
         <main style={{ paddingTop: 68 }}>
             <section style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,99,255,0.12) 0%, transparent 70%)', padding: '40px 0 32px', borderBottom: '1px solid var(--color-border)' }}>
