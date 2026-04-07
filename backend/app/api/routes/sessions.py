@@ -438,9 +438,17 @@ async def create_session(
 async def list_sessions(
     status_filter: Optional[str]=None,
     model_id: Optional[str]=None,
+    current_user: dict=Depends(get_current_user),
 ):
     sessions_col=get_sessions_collection()
-    query: dict={"$or": [{"session_type": "public"}, {"session_type": {"$exists": False}}]}
+    user_id=str(current_user["_id"])
+
+    query: dict={"$or": [
+        {"session_type": "public"},
+        {"session_type": {"$exists": False}},
+        {"lead_user_id": user_id},
+        {"participants.user_id": user_id},
+    ]}
     if status_filter:
         query["status"]=status_filter
     if model_id:
@@ -449,7 +457,6 @@ async def list_sessions(
     cursor=sessions_col.find(query).sort("created_at", -1).limit(50)
     docs=await cursor.to_list(length=50)
     return [await _serialize_session(doc) for doc in docs]
-
 
 @router.get("/{session_key}", response_model=SessionOut)
 async def get_session(session_key: str):
