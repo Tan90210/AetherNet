@@ -95,13 +95,14 @@ export default function SessionManager({ onSessionJoined }) {
     const [approving, setApproving]=useState('');
 
     const [createForm, setCreateForm]=useState({
-        session_name: '',
-        model_id: '', min_clients: 2, max_rounds: 3,
-        input_shape: dataShape ? dataShape.join(',') : '3,224,224',
-        description: '',
-        session_type: 'public',
-        validation_policy: 'shape_only',
-    });
+            session_name: '',
+            model_id: '', min_clients: 2, max_rounds: 3,
+            input_shape: dataShape ? dataShape.join(',') : '3,224,224',
+            description: '',
+            session_type: 'public',
+            validation_policy: 'shape_only',
+            dataset_required: true,
+        });
     const [deleting, setDeleting]=useState('');
 
     const setCreate=(k) => (e) => setCreateForm(f => ({ ...f, [k]: e.target.value }));
@@ -110,7 +111,10 @@ export default function SessionManager({ onSessionJoined }) {
 
     const fetchSessions=async () => {
         setLoading(true);
-        try { const { data }=await sessionsApi.list(); setSessions(data); }
+        try { 
+            const { data }=await sessionsApi.list(); 
+            setSessions(Array.isArray(data) ? data : []);
+        }
         catch { toast.error('Failed to load sessions.'); }
         finally { setLoading(false); }
     };
@@ -133,7 +137,7 @@ export default function SessionManager({ onSessionJoined }) {
 
     const handleCreate=async (e) => {
         e.preventDefault();
-        if (!files || files.length=== 0) {
+        if (createForm.dataset_required && (!files || files.length=== 0)) {
             toast.error('Link and scan your dataset in Local Sandbox before creating a session.');
             return;
         }
@@ -422,12 +426,11 @@ export default function SessionManager({ onSessionJoined }) {
             <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Create FL Session" maxWidth="540px">
                 <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-                    {!folderName && (
+                    {createForm.dataset_required && !folderName && (
                         <div style={{ fontSize: '0.78rem', color: 'var(--color-warning)', padding: '10px 12px', background: 'rgba(255,181,71,0.1)', border: '1px solid rgba(255,181,71,0.25)', borderRadius: 'var(--radius-md)' }}>
                             Link your local dataset in Local Sandbox before creating a session.
                         </div>
                     )}
-
                     <div className="form-group" style={{ marginBottom: 0 }}>
                         <label className="form-label">Session Name *</label>
                         <input
@@ -518,6 +521,20 @@ export default function SessionManager({ onSessionJoined }) {
                             <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem' }}>
                                 <input type="radio" value="private" checked={createForm.session_type=== 'private'} onChange={setCreate('session_type')} />
                                 Private (Invite Link Only)
+                            </label>
+                        </div>
+                    </div>
+                    {/* Dataset Required Toggle */}
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label">Host Dataset</label>
+                        <div style={{ display: 'flex', gap: 16 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem' }}>
+                                <input type="radio" value="true" checked={createForm.dataset_required === true} onChange={() => setCreateForm(f => ({ ...f, dataset_required: true }))} />
+                                I will contribute my own dataset
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem' }}>
+                                <input type="radio" value="false" checked={createForm.dataset_required === false} onChange={() => setCreateForm(f => ({ ...f, dataset_required: false }))} />
+                                Start without a dataset (clients only)
                             </label>
                         </div>
                     </div>
