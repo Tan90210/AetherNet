@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { modelsApi, versionsApi } from '../api/client.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { ArrowLeft, ExternalLink, GitBranch, Upload, Cpu, Download } from 'lucide-react';
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 export default function ModelDetail() {
     const { id }=useParams();
     const { isAuthenticated, user }=useAuth();
+    const navigate=useNavigate();
     const [model, setModel]=useState(null);
     const [versions, setVersions]=useState([]);
     const [loading, setLoading]=useState(true);
@@ -46,7 +47,7 @@ export default function ModelDetail() {
             fd.append('metrics_json', metrics);
             fd.append('notes', notes);
             const { data }=await versionsApi.upload(id, fd);
-            toast.success(`Version ${data.version_number} pinned to IPFS! CID: ${data.new_cid.slice(0, 12)}€¦`);
+            toast.success(`Version ${data.version_number} pinned to IPFS! CID: ${data.new_cid.slice(0, 12)}…`);
             setVersions((v) => [data, ...v]);
             setFile(null);
         } catch (err) {
@@ -68,6 +69,12 @@ export default function ModelDetail() {
             <Link to="/marketplace" className="btn btn-secondary btn-sm"><ArrowLeft size={13} /> Back</Link>
         </div>
     );
+
+    // Base models are catalogue entries only — redirect back to marketplace
+    if (model.tags?.includes('base-model')) {
+        navigate('/marketplace', { replace: true });
+        return null;
+    }
 
     return (
         <main style={{ paddingTop: 68 }}>
@@ -165,7 +172,7 @@ export default function ModelDetail() {
                                             accept=".pt,.pkl,.h5,.bin,.onnx,.safetensors"
                                             onChange={e => setFile(e.target.files[0])}
                                         />
-                                        {file && <p style={{ fontSize: '0.72rem', color: 'var(--color-success)', marginTop: 4 }}>œ“ {file.name} ({(file.size/1024/1024).toFixed(2)} MB)</p>}
+                                        {file && <p style={{ fontSize: '0.72rem', color: 'var(--color-success)', marginTop: 4 }}>✓ {file.name} ({(file.size/1024/1024).toFixed(2)} MB)</p>}
                                     </div>
                                     <div className="form-group" style={{ marginBottom: 0 }}>
                                         <label className="form-label">Metrics (JSON)</label>
