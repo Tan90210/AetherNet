@@ -242,9 +242,7 @@ export function ModelCard({ model }) {
     const meta=FAMILY_META[model.family] || FAMILY_META.custom;
 
     return (
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12, cursor: 'pointer', transition: 'transform 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.transform='translateY(-4px)'}
-            onMouseLeave={e => e.currentTarget.style.transform='none'}>
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12, cursor: 'default' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', borderRadius: 20, background: `${meta.color}22`, border: `1px solid ${meta.color}44` }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: meta.color, display: 'inline-block' }} />
