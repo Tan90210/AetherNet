@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Download, GitBranch, ExternalLink, Cpu } from 'lucide-react';
+import { Download, ExternalLink, Cpu, Lock } from 'lucide-react';
 
 const ARCH_COLORS={
     ResNet18: '#6c63ff', ResNet50: '#6c63ff',
@@ -14,21 +14,35 @@ export default function ModelCard({ model, style={}, className='' }) {
     const cidShort=model.current_version_cid
         ? `${model.current_version_cid.slice(0, 8)}…${model.current_version_cid.slice(-4)}`
         : null;
+
+    // A model is a base catalogue entry if it has the 'base-model' tag
     const isBaseModel = model.tags?.includes('base-model');
 
     const cardContent = (
         <>
-            {/* Arch badge + CID */}
+            {/* Arch badge + BASE ARCHITECTURE label + CID */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                 <span className="badge" style={{ background: `${archColor}20`, color: archColor, borderColor: `${archColor}40` }}>
                     <Cpu size={10} />
                     {model.architecture_type}
                 </span>
-                {cidShort && (
-                    <span className="text-mono" style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', background: 'rgba(255,255,255,0.04)', padding: '3px 8px', borderRadius: 6, border: '1px solid var(--color-border)' }}>
-                        {cidShort}
-                    </span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {isBaseModel && (
+                        <span style={{
+                            fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em',
+                            padding: '3px 8px', borderRadius: 4,
+                            background: 'rgba(255,181,71,0.15)', color: '#ffb547',
+                            border: '1px solid rgba(255,181,71,0.3)', textTransform: 'uppercase',
+                        }}>
+                            Base Architecture
+                        </span>
+                    )}
+                    {cidShort && (
+                        <span className="text-mono" style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', background: 'rgba(255,255,255,0.04)', padding: '3px 8px', borderRadius: 6, border: '1px solid var(--color-border)' }}>
+                            {cidShort}
+                        </span>
+                    )}
+                </div>
             </div>
 
             {/* Name */}
@@ -40,7 +54,7 @@ export default function ModelCard({ model, style={}, className='' }) {
             </p>
 
             {/* Tags */}
-            {model.tags?.length>0 && (
+            {model.tags?.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 14 }}>
                     {model.tags.slice(0, 3).map((tag) => (
                         <span key={tag} style={{ fontSize: '0.68rem', padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>
@@ -60,10 +74,16 @@ export default function ModelCard({ model, style={}, className='' }) {
                     </div>
                     <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{model.owner_username}</span>
                 </div>
-                <div style={{ display: 'flex', gap: 12, color: 'var(--color-text-muted)', fontSize: '0.72rem' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Download size={11} /> {model.download_count}
-                    </span>
+                <div style={{ display: 'flex', gap: 12, color: 'var(--color-text-muted)', fontSize: '0.72rem', alignItems: 'center' }}>
+                    {isBaseModel ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-text-muted)', fontSize: '0.7rem' }}>
+                            <Lock size={10} /> View only
+                        </span>
+                    ) : (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <Download size={11} /> {model.download_count}
+                        </span>
+                    )}
                     {model.current_version_cid && (
                         <a
                             href={`https://gateway.pinata.cloud/ipfs/${model.current_version_cid}`}
@@ -87,20 +107,26 @@ export default function ModelCard({ model, style={}, className='' }) {
         ...style,
     };
 
+    // Base catalogue models: plain div, not clickable
     if (isBaseModel) {
         return (
-            <div className={`glass-card ${className}`} style={{ ...sharedStyle, cursor: 'default' }}>
+            <div
+                className={`glass-card ${className}`}
+                style={{ ...sharedStyle, cursor: 'default', opacity: 0.85 }}
+            >
                 {cardContent}
             </div>
         );
     }
 
+    // User-uploaded models: clickable Link to detail page
     return (
-        <div
+        <Link
+            to={`/models/${model.id}`}
             className={`glass-card ${className}`}
-            style={{ ...sharedStyle, cursor: 'default' }}
+            style={{ ...sharedStyle, cursor: 'pointer' }}
         >
             {cardContent}
-        </div>
+        </Link>
     );
 }
