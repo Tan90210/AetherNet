@@ -125,11 +125,6 @@ export default function SessionManager({ onSessionJoined }) {
         baseModelsApi.list().then(r => setBaseModels(r.data)).catch(() => { });
     }, []);
 
-    useEffect(() => {
-        const timer=setInterval(fetchSessions, 5000);
-        return () => clearInterval(timer);
-    }, []);
-
     const selectedPublishedModel=models.find(m => m.id=== createForm.model_id);
     const selectedBaseModel=baseModels.find(m => m.id=== createForm.model_id);
     const selectedBaseModelId=selectedPublishedModel?.base_model_id || selectedBaseModel?.id || null;
