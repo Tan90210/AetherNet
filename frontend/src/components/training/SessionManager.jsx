@@ -125,6 +125,7 @@ export default function SessionManager({ onSessionJoined }) {
         baseModelsApi.list().then(r => setBaseModels(r.data)).catch(() => { });
     }, []);
 
+
     const selectedPublishedModel=models.find(m => m.id=== createForm.model_id);
     const selectedBaseModel=baseModels.find(m => m.id=== createForm.model_id);
     const selectedBaseModelId=selectedPublishedModel?.base_model_id || selectedBaseModel?.id || null;
@@ -134,6 +135,11 @@ export default function SessionManager({ onSessionJoined }) {
         e.preventDefault();
         if (createForm.dataset_required && (!files || files.length=== 0)) {
             toast.error('Link and scan your dataset in Local Sandbox before creating a session.');
+            return;
+        }
+        if (!createForm.model_id) { toast.error('Please select a model.'); return; }
+        if (!createForm.dataset_required && Number(createForm.min_clients) < 2) {
+            toast.error('Federated learning requires at least 2 clients when host has no dataset.');
             return;
         }
         if (!createForm.model_id) { toast.error('Please select a model.'); return; }
@@ -393,7 +399,11 @@ export default function SessionManager({ onSessionJoined }) {
                                             className="btn btn-primary btn-sm"
                                             style={{ fontSize: '0.7rem', padding: '4px 10px' }}
                                             onClick={() => handleStart(s)}
-                                            disabled={(s.connected_clients || 0)<s.min_clients || startingSessionKey=== s.session_key}
+                                            disabled={
+                                                (s.connected_clients || 0) < s.min_clients ||
+                                                startingSessionKey === s.session_key ||
+                                                s.connected_clients < 2
+                                            }
                                         >
                                             {startingSessionKey=== s.session_key ? 'Starting...' : `Start Training (${s.connected_clients || 0}/${s.min_clients})`}
                                         </button>
